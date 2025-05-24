@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+    <title>Instructor Dashboard</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="container mt-5">
+            <h1>Instructor Dashboard</h1>
+            <p>Welcome, <span th:text="${user.profile != null ? user.profile.firstName : user.username}">Instructor</span>!</p>
+
+            <h2>My Courses</h2>
+            <a th:href="@{/courses/new}" class="btn btn-success mb-3">Create New Course</a>
+            <div th:if="${courses == null or #lists.isEmpty(courses)}">
+                <p>You have not created any courses yet.</p>
+            </div>
+            <div th:unless="${courses == null or #lists.isEmpty(courses)}" class="row">
+                <div th:each="course : ${courses}" class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${course.title}">Course Title</h5>
+                            <p class="card-text" th:text="${course.description}">Course Description</p>
+                            <a th:href="@{'/courses/' + ${course.id} + '/edit'}" class="btn btn-primary">Edit Course</a>
+                            <a th:href="@{'/courses/' + ${course.id}}" class="btn btn-info">View Course</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 

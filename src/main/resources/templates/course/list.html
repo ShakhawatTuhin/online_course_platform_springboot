@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout/default}">
+<head>
+    <title>Courses - Online Course Platform</title>
+</head>
+<body>
+    <div id="content" layout:fragment="content">
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h2>Available Courses</h2>
+            </div>
+            <div class="col-md-4">
+                <form th:action="@{/courses}" method="get" class="d-flex">
+                    <input type="text" name="search" class="form-control me-2" 
+                           placeholder="Search courses..." th:value="${search}">
+                    <button type="submit" class="btn btn-outline-primary">Search</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            <div class="col" th:each="course : ${courses}">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${course.title}">Course Title</h5>
+                        <p class="card-text" th:text="${course.description}">Description</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                Duration: <span th:text="${course.duration}">120</span> minutes
+                            </small>
+                            <small class="text-muted">
+                                By <span th:text="${course.instructor.username}">Instructor</span>
+                            </small>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a th:href="@{/courses/{id}(id=${course.id})}" 
+                               class="btn btn-sm btn-primary">View Details</a>
+                            <div sec:authorize="hasRole('INSTRUCTOR')" 
+                                 th:if="${#authentication.principal.username == course.instructor.username}">
+                                <a th:href="@{/courses/{id}/edit(id=${course.id})}" 
+                                   class="btn btn-sm btn-secondary">Edit</a>
+                                <form th:action="@{/courses/{id}/delete(id=${course.id})}" 
+                                      method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-danger" 
+                                            onclick="return confirm('Are you sure?')">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <nav th:if="${courses.totalPages > 1}" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${courses.first} ? 'disabled'">
+                    <a class="page-link" th:href="@{/courses(page=${courses.number - 1}, search=${search})}">&laquo;</a>
+                </li>
+                <li class="page-item" th:each="i : ${#numbers.sequence(0, courses.totalPages - 1)}"
+                    th:classappend="${i == courses.number} ? 'active'">
+                    <a class="page-link" th:href="@{/courses(page=${i}, search=${search})}" th:text="${i + 1}">1</a>
+                </li>
+                <li class="page-item" th:classappend="${courses.last} ? 'disabled'">
+                    <a class="page-link" th:href="@{/courses(page=${courses.number + 1}, search=${search})}">&raquo;</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</body>
+</html> 

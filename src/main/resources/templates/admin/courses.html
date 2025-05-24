@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+    <title>Course Management - Online Course Platform</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container py-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Course Management</h2>
+            <a th:href="@{/courses/create}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Create Course
+            </a>
+        </div>
+
+        <!-- Filters -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form th:action="@{/admin/courses}" method="get" class="row g-3">
+                    <div class="col-md-4">
+                        <label for="search" class="form-label">Search</label>
+                        <input type="text" class="form-control" id="search" name="search" 
+                               th:value="${param.search}" placeholder="Search by title or description">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="instructor" class="form-label">Instructor</label>
+                        <select class="form-select" id="instructor" name="instructor">
+                            <option value="">All Instructors</option>
+                            <option th:each="instructor : ${instructors}"
+                                    th:value="${instructor.id}" 
+                                    th:text="${instructor.profile.firstName + ' ' + instructor.profile.lastName}"
+                                    th:selected="${param.instructor != null and param.instructor[0] == instructor.id}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label for="sort" class="form-label">Sort By</label>
+                        <select class="form-select" id="sort" name="sort">
+                            <option value="createdAt,desc">Newest First</option>
+                            <option value="createdAt,asc" th:selected="${param.sort == 'createdAt,asc'}">Oldest First</option>
+                            <option value="title,asc" th:selected="${param.sort == 'title,asc'}">Title (A-Z)</option>
+                            <option value="title,desc" th:selected="${param.sort == 'title,desc'}">Title (Z-A)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="fas fa-search"></i> Filter
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Courses Table -->
+        <div class="card">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Instructor</th>
+                            <th>Duration</th>
+                            <th>Students</th>
+                            <th>Created At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="course : ${courses}">
+                            <td>
+                                <a th:href="@{/courses/{id}(id=${course.id})}" 
+                                   th:text="${course.title}" class="text-decoration-none">title</a>
+                            </td>
+                            <td th:text="${course.instructor.profile.firstName + ' ' + course.instructor.profile.lastName}">
+                                instructor</td>
+                            <td th:text="${course.duration}">duration</td>
+                            <td th:text="${#sets.size(course.enrolledStudents)}">0</td>
+                            <td th:text="${#temporals.format(course.createdAt, 'dd MMM yyyy')}">date</td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a th:href="@{/courses/{id}(id=${course.id})}" 
+                                       class="btn btn-outline-info" title="View">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <a th:href="@{/courses/{id}/edit(id=${course.id})}" 
+                                       class="btn btn-outline-primary" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-outline-danger"
+                                            th:onclick="'deleteCourse(' + ${course.id} + ')'" title="Delete">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(courses)}">
+                            <td colspan="6" class="text-center">No courses found</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pagination -->
+        <nav th:if="${courses.totalPages > 1}" class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${courses.first ? 'disabled' : ''}">
+                    <a class="page-link" th:href="@{/admin/courses(page=${courses.number - 1}, size=${courses.size}, 
+                        search=${param.search}, instructor=${param.instructor}, sort=${param.sort})}">Previous</a>
+                </li>
+                <li class="page-item" th:each="pageNumber : ${#numbers.sequence(0, courses.totalPages - 1)}"
+                    th:classappend="${pageNumber == courses.number ? 'active' : ''}">
+                    <a class="page-link" th:href="@{/admin/courses(page=${pageNumber}, size=${courses.size}, 
+                        search=${param.search}, instructor=${param.instructor}, sort=${param.sort})}"
+                       th:text="${pageNumber + 1}">1</a>
+                </li>
+                <li class="page-item" th:classappend="${courses.last ? 'disabled' : ''}">
+                    <a class="page-link" th:href="@{/admin/courses(page=${courses.number + 1}, size=${courses.size}, 
+                        search=${param.search}, instructor=${param.instructor}, sort=${param.sort})}">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this course? This action cannot be undone and will also delete all associated lessons.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form id="deleteForm" method="post">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        function deleteCourse(courseId) {
+            const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            document.getElementById('deleteForm').action = /*[[@{/courses/}]]*/ '' + courseId + '/delete';
+            modal.show();
+        }
+    </script>
+</div>
+</body>
+</html> 

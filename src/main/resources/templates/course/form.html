@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+    <title th:text="${course.id == null ? 'Create Course' : 'Edit Course'} + ' - Online Course Platform'">Course Form</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="mb-0" th:text="${course.id == null ? 'Create New Course' : 'Edit Course'}">Course Form</h4>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{${course.id == null ? '/courses/create' : '/courses/' + course.id + '/edit'}}"
+                              method="post" th:object="${course}">
+                            <input type="hidden" th:if="${course.id}" th:field="*{id}">
+
+                            <div class="mb-3">
+                                <label for="title" class="form-label">Course Title</label>
+                                <input type="text" class="form-control" id="title" th:field="*{title}"
+                                       placeholder="Enter course title">
+                                <div class="text-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="description" class="form-label">Description</label>
+                                <textarea class="form-control" id="description" th:field="*{description}" rows="4"
+                                          placeholder="Enter course description"></textarea>
+                                <div class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="duration" class="form-label">Duration</label>
+                                <input type="text" class="form-control" id="duration" th:field="*{duration}"
+                                       placeholder="e.g., 8 weeks">
+                                <div class="text-danger" th:if="${#fields.hasErrors('duration')}" th:errors="*{duration}"></div>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i>
+                                    <span th:text="${course.id == null ? 'Create Course' : 'Update Course'}">Submit</span>
+                                </button>
+                                <a th:href="@{/courses}" class="btn btn-outline-secondary">
+                                    <i class="fas fa-times"></i> Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html> 

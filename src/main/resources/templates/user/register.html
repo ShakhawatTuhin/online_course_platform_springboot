@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+    <title>Register - Online Course Platform</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="text-center mb-0">Create Account</h2>
+                    </div>
+                    <div class="card-body p-4">
+                        <form th:action="@{/register}" th:object="${user}" method="post" class="needs-validation" novalidate>
+                            <!-- Username -->
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                    <input type="text" class="form-control" id="username" 
+                                           th:field="*{username}" th:errorclass="is-invalid"
+                                           placeholder="Choose a username">
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('username')}"
+                                         th:errors="*{username}">Username error</div>
+                                </div>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                    <input type="email" class="form-control" id="email" 
+                                           th:field="*{email}" th:errorclass="is-invalid"
+                                           placeholder="Enter your email">
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('email')}"
+                                         th:errors="*{email}">Email error</div>
+                                </div>
+                            </div>
+
+                            <!-- Password -->
+                            <div class="mb-3">
+                                <label for="password" class="form-label">Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                    <input type="password" class="form-control" id="password" 
+                                           th:field="*{password}" th:errorclass="is-invalid"
+                                           placeholder="Create a password">
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}"
+                                         th:errors="*{password}">Password error</div>
+                                </div>
+                            </div>
+
+                            <!-- First Name -->
+                            <div class="mb-3">
+                                <label for="firstName" class="form-label">First Name</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                    <input type="text" class="form-control" id="firstName" 
+                                           th:field="*{firstName}" th:errorclass="is-invalid"
+                                           placeholder="Enter your first name">
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('firstName')}"
+                                         th:errors="*{firstName}">First name error</div>
+                                </div>
+                            </div>
+
+                            <!-- Last Name -->
+                            <div class="mb-3">
+                                <label for="lastName" class="form-label">Last Name</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                    <input type="text" class="form-control" id="lastName" 
+                                           th:field="*{lastName}" th:errorclass="is-invalid"
+                                           placeholder="Enter your last name">
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('lastName')}"
+                                         th:errors="*{lastName}">Last name error</div>
+                                </div>
+                            </div>
+
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-user-plus me-2"></i>Register
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card-footer text-center py-3">
+                        Already have an account? <a th:href="@{/login}" class="text-primary">Login here</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom validation script -->
+    <div layout:fragment="scripts">
+        <script>
+            // Enable Bootstrap form validation
+            (function () {
+                'use strict'
+                var forms = document.querySelectorAll('.needs-validation')
+                Array.prototype.slice.call(forms)
+                    .forEach(function (form) {
+                        form.addEventListener('submit', function (event) {
+                            if (!form.checkValidity()) {
+                                event.preventDefault()
+                                event.stopPropagation()
+                            }
+                            form.classList.add('was-validated')
+                        }, false)
+                    })
+            })()
+        </script>
+    </div>
+</body>
+</html> 

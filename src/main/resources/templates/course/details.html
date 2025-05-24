@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout/default}">
+<head>
+    <title th:text="${course.title + ' - Online Course Platform'}">Course Details</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container py-5">
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <h1 class="mb-3" th:text="${course.title}">Course Title</h1>
+                <p class="lead" th:text="${course.description}">Course Description</p>
+                <div class="d-flex align-items-center mb-3">
+                    <span class="me-3">
+                        <i class="fas fa-clock"></i>
+                        Duration: <span th:text="${course.duration}">Duration</span>
+                    </span>
+                    <span class="me-3">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                        Instructor: <span th:text="${course.instructor.profile.firstName + ' ' + course.instructor.profile.lastName}">Instructor Name</span>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-4 text-end">
+                <div sec:authorize="isAuthenticated()">
+                    <div th:if="${!isEnrolled and !isInstructor}">
+                        <form th:action="@{/courses/{id}/enroll(id=${course.id})}" method="post">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-sign-in-alt"></i> Enroll Now
+                            </button>
+                        </form>
+                    </div>
+                    <div th:if="${isEnrolled}">
+                        <form th:action="@{/courses/{id}/unenroll(id=${course.id})}" method="post" 
+                              onsubmit="return confirm('Are you sure you want to unenroll from this course?');">
+                            <button type="submit" class="btn btn-danger btn-lg">
+                                <i class="fas fa-sign-out-alt"></i> Unenroll
+                            </button>
+                        </form>
+                    </div>
+                    <div th:if="${isInstructor}" class="btn-group">
+                        <a th:href="@{/courses/{id}/edit(id=${course.id})}" class="btn btn-outline-primary">
+                            <i class="fas fa-edit"></i> Edit Course
+                        </a>
+                        <form th:action="@{/courses/{id}/delete(id=${course.id})}" method="post" class="d-inline"
+                              onsubmit="return confirm('Are you sure you want to delete this course?');">
+                            <button type="submit" class="btn btn-outline-danger">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <a sec:authorize="!isAuthenticated()" th:href="@{/login}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-sign-in-alt"></i> Login to Enroll
+                </a>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Course Content</h5>
+                        <a th:if="${isInstructor}" th:href="@{/courses/{id}/lessons/create(id=${course.id})}" 
+                           class="btn btn-sm btn-primary">
+                            <i class="fas fa-plus"></i> Add Lesson
+                        </a>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <div th:each="lesson : ${lessons}" class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1" th:text="${lesson.title}">Lesson Title</h6>
+                                    <small class="text-muted">
+                                        Order: <span th:text="${lesson.orderNumber}">1</span>
+                                    </small>
+                                </div>
+                                <div th:if="${isInstructor}" class="btn-group">
+                                    <a th:href="@{/courses/{courseId}/lessons/{lessonId}/edit(courseId=${course.id},lessonId=${lesson.id})}" 
+                                       class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form th:action="@{/courses/{courseId}/lessons/{lessonId}/delete(courseId=${course.id},lessonId=${lesson.id})}" 
+                                          method="post" class="d-inline"
+                                          onsubmit="return confirm('Are you sure you want to delete this lesson?');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            <p class="mb-1" th:text="${#strings.abbreviate(lesson.content, 200)}">Lesson Content</p>
+                        </div>
+                        <div th:if="${#lists.isEmpty(lessons)}" class="list-group-item text-center text-muted">
+                            No lessons available yet.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Course Information</h5>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item">
+                            <small class="text-muted">Created</small>
+                            <p class="mb-0" th:text="${#temporals.format(course.createdAt, 'dd MMM yyyy')}">Creation Date</p>
+                        </div>
+                        <div class="list-group-item">
+                            <small class="text-muted">Last Updated</small>
+                            <p class="mb-0" th:text="${#temporals.format(course.updatedAt, 'dd MMM yyyy')}">Update Date</p>
+                        </div>
+                        <div class="list-group-item">
+                            <small class="text-muted">Total Lessons</small>
+                            <p class="mb-0" th:text="${#lists.size(lessons)}">Lesson Count</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html> 

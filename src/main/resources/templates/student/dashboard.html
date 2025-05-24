@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+    <title>Student Dashboard</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="container mt-5">
+            <h1>Student Dashboard</h1>
+            <p>Welcome, <span th:text="${user.profile != null ? user.profile.firstName : user.username}">User</span>!</p>
+            
+            <h2>My Enrolled Courses</h2>
+            <div th:if="${enrolledCourses == null or #lists.isEmpty(enrolledCourses)}">
+                <p>You are not enrolled in any courses yet.</p>
+                <a th:href="@{/courses}" class="btn btn-primary">Browse Courses</a>
+            </div>
+            <div th:unless="${enrolledCourses == null or #lists.isEmpty(enrolledCourses)}" class="row">
+                <div th:each="course : ${enrolledCourses}" class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${course.title}">Course Title</h5>
+                            <p class="card-text" th:text="${course.description}">Course Description</p>
+                            <a th:href="@{'/courses/' + ${course.id}}" class="btn btn-primary">View Course</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
