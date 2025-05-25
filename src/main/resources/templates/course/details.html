@@ -23,6 +23,14 @@
                 </div>
             </div>
             <div class="col-md-4 text-end">
+                <div class="mb-3">
+                    <a sec:authorize="hasRole('INSTRUCTOR')" th:href="@{/dashboard}" class="btn btn-outline-secondary">
+                        <i class="fas fa-home"></i> Back to Dashboard
+                    </a>
+                    <a sec:authorize="!hasRole('INSTRUCTOR')" th:href="@{/}" class="btn btn-outline-secondary">
+                        <i class="fas fa-home"></i> Back to Home
+                    </a>
+                </div>
                 <div sec:authorize="isAuthenticated()">
                     <div th:if="${!isEnrolled and !isInstructor}">
                         <form th:action="@{/courses/{id}/enroll(id=${course.id})}" method="post">

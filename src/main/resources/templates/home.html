@@ -19,7 +19,8 @@
                         </a>
                     </div>
                     <div class="col-md-6 text-center">
-                        <img th:src="@{/images/hero-image.svg}" alt="Education" class="img-fluid">
+                        <!-- Image removed or fallback, as hero-image.svg does not exist -->
+                        <img th:src="@{/images/logo.png}" alt="Education" class="img-fluid" style="max-height:200px;">
                     </div>
                 </div>
             </div>
@@ -69,14 +70,14 @@
                 <!-- Course cards will be dynamically populated -->
                 <div class="col-md-4" th:each="course : ${featuredCourses}">
                     <div class="card h-100 border-0 shadow-sm course-card">
-                        <img class="card-img-top" th:src="${course.imageUrl}" alt="Course Image">
+                        <img class="card-img-top" th:src="@{/images/logo.png}" alt="Course Image" style="max-height:150px;object-fit:contain;">
                         <div class="card-body">
                             <h5 class="card-title" th:text="${course.title}">Course Title</h5>
                             <p class="card-text text-muted" th:text="${course.description}">Course Description</p>
                         </div>
                         <div class="card-footer bg-transparent border-0">
                             <div class="d-flex justify-content-between align-items-center">
-                                <span class="text-primary" th:text="${course.instructor.name}">Instructor Name</span>
+                                <span class="text-primary" th:text="${course.instructor.profile.firstName + ' ' + course.instructor.profile.lastName}">Instructor Name</span>
                                 <a th:href="@{/courses/{id}(id=${course.id})}" class="btn btn-sm btn-outline-primary">Learn More</a>
                             </div>
                         </div>

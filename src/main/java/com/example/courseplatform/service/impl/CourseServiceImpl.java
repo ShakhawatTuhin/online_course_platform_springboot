@@ -39,6 +39,12 @@ public class CourseServiceImpl implements CourseService {
     @Transactional
     public void deleteCourse(Long id) {
         Course course = findById(id);
+        // Unenroll all students
+        for (User student : new java.util.HashSet<>(course.getEnrolledStudents())) {
+            course.getEnrolledStudents().remove(student);
+            student.getEnrolledCourses().remove(course);
+        }
+        courseRepository.save(course); // Persist the unenrollment
         courseRepository.delete(course);
     }
 

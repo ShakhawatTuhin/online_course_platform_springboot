@@ -1,10 +1,13 @@
 package com.example.courseplatform.controller;
 
 import com.example.courseplatform.dto.UserRegistrationDto;
+import com.example.courseplatform.dto.UserUpdateDto;
 import com.example.courseplatform.model.User;
+import com.example.courseplatform.model.UserProfile;
 import com.example.courseplatform.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -28,6 +31,11 @@ public class UserController {
     public String registerUser(@Valid @ModelAttribute("user") UserRegistrationDto registrationDto,
                              BindingResult result,
                              RedirectAttributes redirectAttributes) {
+        // Check if passwords match
+        if (!registrationDto.getPassword().equals(registrationDto.getConfirmPassword())) {
+            result.rejectValue("confirmPassword", "error.user", "Passwords do not match");
+        }
+        
         if (result.hasErrors()) {
             return "user/register";
         }
@@ -48,22 +56,54 @@ public class UserController {
     }
 
     @GetMapping("/profile")
-    public String showProfile(Model model) {
-        User currentUser = userService.getCurrentUser();
-        model.addAttribute("user", currentUser);
+    public String showProfilePage(Model model, Authentication authentication) {
+        if (authentication == null) {
+            return "redirect:/login";
+        }
+        User currentUser = userService.findByUsername(authentication.getName());
+        
+        UserUpdateDto userUpdateDto = new UserUpdateDto();
+        if (currentUser.getProfile() != null) {
+            UserProfile profile = currentUser.getProfile();
+            userUpdateDto.setFirstName(profile.getFirstName());
+            userUpdateDto.setLastName(profile.getLastName());
+            userUpdateDto.setBio(profile.getBio());
+        }
+        userUpdateDto.setEmail(currentUser.getEmail());
+
+        model.addAttribute("userUpdateDto", userUpdateDto);
+        model.addAttribute("userId", currentUser.getId());
         return "user/profile";
     }
 
     @PostMapping("/profile")
-    public String updateProfile(@Valid @ModelAttribute("user") User user,
-                              BindingResult result,
-                              RedirectAttributes redirectAttributes) {
+    public String processProfileUpdate(@Valid @ModelAttribute("userUpdateDto") UserUpdateDto userUpdateDto,
+                                   BindingResult result,
+                                   Authentication authentication,
+                                   RedirectAttributes redirectAttributes,
+                                   Model model) {
+        if (authentication == null) {
+            return "redirect:/login";
+        }
+        User currentUser = userService.findByUsername(authentication.getName());
+
         if (result.hasErrors()) {
+            model.addAttribute("userId", currentUser.getId());
             return "user/profile";
         }
 
-        userService.updateProfile(user);
-        redirectAttributes.addFlashAttribute("success", "Profile updated successfully!");
-        return "redirect:/profile";
+        try {
+            userService.updateUser(currentUser.getId(), userUpdateDto);
+            redirectAttributes.addFlashAttribute("success", "Profile updated successfully!");
+            return "redirect:/profile";
+        } catch (IllegalArgumentException e) {
+            result.rejectValue("email", "error.userUpdateDto", e.getMessage());
+            model.addAttribute("userId", currentUser.getId());
+            return "user/profile";
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "An unexpected error occurred.");
+            model.addAttribute("userId", currentUser.getId());
+            return "user/profile";
+        }
     }
 } 

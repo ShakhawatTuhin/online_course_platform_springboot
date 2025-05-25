@@ -54,6 +54,19 @@
                                 </div>
                             </div>
 
+                            <!-- Confirm Password -->
+                            <div class="mb-3">
+                                <label for="confirmPassword" class="form-label">Confirm Password</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                    <input type="password" class="form-control" id="confirmPassword" 
+                                           th:field="*{confirmPassword}" th:errorclass="is-invalid"
+                                           placeholder="Confirm your password">
+                                    <div class="invalid-feedback" th:if="${#fields.hasErrors('confirmPassword')}"
+                                         th:errors="*{confirmPassword}">Confirm password error</div>
+                                </div>
+                            </div>
+
                             <!-- First Name -->
                             <div class="mb-3">
                                 <label for="firstName" class="form-label">First Name</label>
