@@ -27,22 +27,19 @@
 
                             <div class="mb-3">
                                 <label for="description" class="form-label">Description</label>
-                                <textarea class="form-control" id="description" th:field="*{description}" rows="4"
-                                          placeholder="Enter course description"></textarea>
+                                <textarea class="form-control" id="description" th:field="*{description}" rows="3"></textarea>
                                 <div class="text-danger" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
                             </div>
 
                             <div class="mb-3">
                                 <label for="duration" class="form-label">Duration</label>
-                                <input type="text" class="form-control" id="duration" th:field="*{duration}"
-                                       placeholder="e.g., 8 weeks">
+                                <input type="text" class="form-control" id="duration" th:field="*{duration}" placeholder="e.g. 10 hours">
                                 <div class="text-danger" th:if="${#fields.hasErrors('duration')}" th:errors="*{duration}"></div>
                             </div>
 
                             <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save"></i>
-                                    <span th:text="${course.id == null ? 'Create Course' : 'Update Course'}">Submit</span>
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-save me-2"></i>Save
                                 </button>
                                 <a th:href="@{/courses}" class="btn btn-outline-secondary">
                                     <i class="fas fa-times"></i> Cancel

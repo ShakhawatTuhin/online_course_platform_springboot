@@ -34,19 +34,8 @@
                             </option>
                         </select>
                     </div>
-                    <div class="col-md-3">
-                        <label for="sort" class="form-label">Sort By</label>
-                        <select class="form-select" id="sort" name="sort">
-                            <option value="createdAt,desc">Newest First</option>
-                            <option value="createdAt,asc" th:selected="${param.sort == 'createdAt,asc'}">Oldest First</option>
-                            <option value="title,asc" th:selected="${param.sort == 'title,asc'}">Title (A-Z)</option>
-                            <option value="title,desc" th:selected="${param.sort == 'title,desc'}">Title (Z-A)</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2 d-flex align-items-end">
-                        <button type="submit" class="btn btn-primary w-100">
-                            <i class="fas fa-search"></i> Filter
-                        </button>
+                    <div class="col-md-3 align-self-end">
+                        <button type="submit" class="btn btn-outline-primary">Filter</button>
                     </div>
                 </form>
             </div>
@@ -61,41 +50,32 @@
                             <th>Title</th>
                             <th>Instructor</th>
                             <th>Duration</th>
-                            <th>Students</th>
                             <th>Created At</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr th:each="course : ${courses}">
-                            <td>
-                                <a th:href="@{/courses/{id}(id=${course.id})}" 
-                                   th:text="${course.title}" class="text-decoration-none">title</a>
-                            </td>
-                            <td th:text="${course.instructor.profile.firstName + ' ' + course.instructor.profile.lastName}">
-                                instructor</td>
+                            <td th:text="${course.title}">title</td>
+                            <td th:text="${course.instructor.profile.firstName + ' ' + course.instructor.profile.lastName}">instructor</td>
                             <td th:text="${course.duration}">duration</td>
-                            <td th:text="${#sets.size(course.enrolledStudents)}">0</td>
                             <td th:text="${#temporals.format(course.createdAt, 'dd MMM yyyy')}">date</td>
                             <td>
                                 <div class="btn-group btn-group-sm">
-                                    <a th:href="@{/courses/{id}(id=${course.id})}" 
-                                       class="btn btn-outline-info" title="View">
+                                    <a th:href="@{/courses/{id}(id=${course.id})}" class="btn btn-outline-info">
                                         <i class="fas fa-eye"></i>
                                     </a>
-                                    <a th:href="@{/courses/{id}/edit(id=${course.id})}" 
-                                       class="btn btn-outline-primary" title="Edit">
+                                    <a th:href="@{/courses/{id}/edit(id=${course.id})}" class="btn btn-outline-primary">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <button type="button" class="btn btn-outline-danger"
-                                            th:onclick="'deleteCourse(' + ${course.id} + ')'" title="Delete">
+                                    <button type="button" class="btn btn-outline-danger" th:onclick="'deleteCourse(' + ${course.id} + ')'">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
                             </td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(courses)}">
-                            <td colspan="6" class="text-center">No courses found</td>
+                            <td colspan="5" class="text-center">No courses found</td>
                         </tr>
                     </tbody>
                 </table>
@@ -106,18 +86,15 @@
         <nav th:if="${courses.totalPages > 1}" class="mt-4">
             <ul class="pagination justify-content-center">
                 <li class="page-item" th:classappend="${courses.first ? 'disabled' : ''}">
-                    <a class="page-link" th:href="@{/admin/courses(page=${courses.number - 1}, size=${courses.size}, 
-                        search=${param.search}, instructor=${param.instructor}, sort=${param.sort})}">Previous</a>
+                    <a class="page-link" th:href="@{/admin/courses(page=${courses.number - 1}, size=${courses.size}, search=${param.search}, instructor=${param.instructor})}">Previous</a>
                 </li>
                 <li class="page-item" th:each="pageNumber : ${#numbers.sequence(0, courses.totalPages - 1)}"
                     th:classappend="${pageNumber == courses.number ? 'active' : ''}">
-                    <a class="page-link" th:href="@{/admin/courses(page=${pageNumber}, size=${courses.size}, 
-                        search=${param.search}, instructor=${param.instructor}, sort=${param.sort})}"
+                    <a class="page-link" th:href="@{/admin/courses(page=${pageNumber}, size=${courses.size}, search=${param.search}, instructor=${param.instructor})}"
                        th:text="${pageNumber + 1}">1</a>
                 </li>
                 <li class="page-item" th:classappend="${courses.last ? 'disabled' : ''}">
-                    <a class="page-link" th:href="@{/admin/courses(page=${courses.number + 1}, size=${courses.size}, 
-                        search=${param.search}, instructor=${param.instructor}, sort=${param.sort})}">Next</a>
+                    <a class="page-link" th:href="@{/admin/courses(page=${courses.number + 1}, size=${courses.size}, search=${param.search}, instructor=${param.instructor})}">Next</a>
                 </li>
             </ul>
         </nav>

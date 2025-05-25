@@ -46,7 +46,9 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/")
                 .permitAll()
             )
-            .headers(headers -> headers.frameOptions().disable()) // For H2 Console
+            .headers(headers -> headers
+                .frameOptions(frameOptionsConfig -> frameOptionsConfig.sameOrigin())
+            )
             .authenticationProvider(authenticationProvider());
 
         return http.build();

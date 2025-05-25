@@ -12,58 +12,36 @@
                 <div class="card">
                     <div class="card-body text-center">
                         <img src="https://via.placeholder.com/150" class="rounded-circle mb-3" alt="Profile Picture">
-                        <h4 class="card-title" th:text="${user.profile.firstName + ' ' + user.profile.lastName}">Full Name</h4>
-                        <p class="text-muted" th:text="${user.email}">email@example.com</p>
-                        <p class="badge bg-primary" th:text="${user.role}">ROLE</p>
+                        <h4 class="card-title" th:text="${userUpdateDto.firstName != null ? userUpdateDto.firstName + ' ' + userUpdateDto.lastName : 'User'}">Full Name</h4>
+                        <p class="text-muted" th:text="${userUpdateDto.email}">email@example.com</p>
                     </div>
                 </div>
             </div>
             <div class="col-md-8">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Profile Information</h5>
-                        <form th:action="@{/profile}" method="post" th:object="${user}">
-                            <input type="hidden" th:field="*{id}">
-                            <input type="hidden" th:field="*{username}">
-                            <input type="hidden" th:field="*{password}">
-                            <input type="hidden" th:field="*{role}">
-                            
+                        <h5 class="card-title">Edit Profile Information</h5>
+                        <form th:action="@{/profile}" method="post" th:object="${userUpdateDto}">
                             <div class="mb-3">
-                                <label class="form-label">Username</label>
-                                <input type="text" class="form-control" th:value="*{username}" disabled>
-                            </div>
-                            
-                            <div class="mb-3">
-                                <label class="form-label">Email</label>
-                                <input type="email" class="form-control" th:field="*{email}">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" id="email" class="form-control" th:field="*{email}">
                                 <div class="text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
                             </div>
-
                             <div class="mb-3">
-                                <label class="form-label">First Name</label>
-                                <input type="text" class="form-control" th:field="*{profile.firstName}">
-                                <div class="text-danger" th:if="${#fields.hasErrors('profile.firstName')}" th:errors="*{profile.firstName}"></div>
+                                <label for="firstName" class="form-label">First Name</label>
+                                <input type="text" id="firstName" class="form-control" th:field="*{firstName}">
+                                <div class="text-danger" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}"></div>
                             </div>
-
                             <div class="mb-3">
-                                <label class="form-label">Last Name</label>
-                                <input type="text" class="form-control" th:field="*{profile.lastName}">
-                                <div class="text-danger" th:if="${#fields.hasErrors('profile.lastName')}" th:errors="*{profile.lastName}"></div>
+                                <label for="lastName" class="form-label">Last Name</label>
+                                <input type="text" id="lastName" class="form-control" th:field="*{lastName}">
+                                <div class="text-danger" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}"></div>
                             </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Bio</label>
-                                <textarea class="form-control" th:field="*{profile.bio}" rows="3"></textarea>
-                                <div class="text-danger" th:if="${#fields.hasErrors('profile.bio')}" th:errors="*{profile.bio}"></div>
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-save me-2"></i>Save Changes
+                                </button>
                             </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Education</label>
-                                <input type="text" class="form-control" th:field="*{profile.education}">
-                                <div class="text-danger" th:if="${#fields.hasErrors('profile.education')}" th:errors="*{profile.education}"></div>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary">Update Profile</button>
                         </form>
                     </div>
                 </div>
