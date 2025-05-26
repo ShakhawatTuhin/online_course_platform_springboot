@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layout/default}">
+<head>
+    <title th:text="${lesson.title} + ' - Online Course Platform'">Lesson Details</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container py-5">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h1 class="h3 mb-0" th:text="${lesson.title}">Lesson Title</h1>
+                <div sec:authorize="hasRole('INSTRUCTOR')">
+                    <div class="btn-group">
+                        <a th:href="@{/courses/{courseId}/lessons/{lessonId}/edit(courseId=${course.id},lessonId=${lesson.id})}"
+                           class="btn btn-sm btn-primary">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal"
+                                data-bs-target="#deleteModal">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="lesson-content" th:utext="${lesson.content}">
+                    Lesson content goes here...
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="d-flex justify-content-between">
+                    <a th:href="@{/courses/{id}(id=${course.id})}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Course
+                    </a>
+                    
+                    <!-- Lesson navigation -->
+                    <div class="btn-group">
+                        <a th:if="${previousLesson != null}" 
+                           th:href="@{/courses/{courseId}/lessons/{lessonId}(courseId=${course.id},lessonId=${previousLesson.id})}"
+                           class="btn btn-outline-primary">
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </a>
+                        <a th:if="${nextLesson != null}" 
+                           th:href="@{/courses/{courseId}/lessons/{lessonId}(courseId=${course.id},lessonId=${nextLesson.id})}"
+                           class="btn btn-outline-primary">
+                            Next <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to delete this lesson? This action cannot be undone.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <form th:action="@{/courses/{courseId}/lessons/{lessonId}/delete(courseId=${course.id},lessonId=${lesson.id})}" method="post">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html> 

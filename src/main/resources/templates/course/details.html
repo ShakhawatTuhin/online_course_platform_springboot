@@ -126,6 +126,28 @@
                         </div>
                     </div>
                 </div>
+                
+                <!-- Enrolled Students Section (only visible to instructors) -->
+                <div class="card mb-4" th:if="${isInstructor}">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Enrolled Students</h5>
+                        <span class="badge bg-primary" th:text="${#lists.size(enrolledStudents)}">0</span>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <div th:each="student : ${enrolledStudents}" class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h6 class="mb-1" th:text="${student.profile != null ? student.profile.firstName + ' ' + student.profile.lastName : student.username}">Student Name</h6>
+                                    <small class="text-muted" th:text="${student.email}">student@example.com</small>
+                                </div>
+                                <span class="badge bg-success">Enrolled</span>
+                            </div>
+                        </div>
+                        <div th:if="${enrolledStudents.isEmpty()}" class="list-group-item text-center text-muted">
+                            No students enrolled yet.
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

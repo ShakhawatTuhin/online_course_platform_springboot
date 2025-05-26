@@ -57,6 +57,11 @@ public class CourseController {
                 isEnrolled = courseService.isStudentEnrolled(course.getId(), currentUser);
                 if (course.getInstructor() != null) {
                     isInstructor = course.getInstructor().getId().equals(currentUser.getId());
+                    
+                    // If the current user is the instructor, add enrolled students to the model
+                    if (isInstructor) {
+                        model.addAttribute("enrolledStudents", course.getEnrolledStudents());
+                    }
                 }
             }
         }

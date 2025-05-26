@@ -10,7 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,13 +38,12 @@ public class CourseRestController {
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @PostMapping
-    public ResponseEntity<Course> createCourse(@Valid @RequestBody CourseDto courseDto, Authentication authentication) {
-        if (authentication == null) return ResponseEntity.status(401).build();
+    public ResponseEntity<Course> createCourse(@Valid @RequestBody CourseDto courseDto) {
         Course course = new Course();
         course.setTitle(courseDto.getTitle());
         course.setDescription(courseDto.getDescription());
         course.setDuration(courseDto.getDuration());
-        course.setInstructor(userService.findByUsername(authentication.getName()));
+        course.setInstructor(userService.getCurrentUser());
         return ResponseEntity.ok(courseService.createCourse(course));
     }
 
@@ -67,29 +65,25 @@ public class CourseRestController {
     }
 
     @PostMapping("/{id}/enroll")
-    public ResponseEntity<Void> enrollInCourse(@PathVariable Long id, Authentication authentication) {
-        if (authentication == null) return ResponseEntity.status(401).build();
-        courseService.enrollStudent(id, userService.findByUsername(authentication.getName()));
+    public ResponseEntity<Void> enrollInCourse(@PathVariable Long id) {
+        courseService.enrollStudent(id, userService.getCurrentUser());
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/{id}/unenroll")
-    public ResponseEntity<Void> unenrollFromCourse(@PathVariable Long id, Authentication authentication) {
-        if (authentication == null) return ResponseEntity.status(401).build();
-        courseService.unenrollStudent(id, userService.findByUsername(authentication.getName()));
+    public ResponseEntity<Void> unenrollFromCourse(@PathVariable Long id) {
+        courseService.unenrollStudent(id, userService.getCurrentUser());
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/my-courses")
-    public ResponseEntity<List<Course>> getMyEnrolledCourses(Authentication authentication) {
-        if (authentication == null) return ResponseEntity.status(401).build();
-        return ResponseEntity.ok(courseService.findEnrolledCourses(userService.findByUsername(authentication.getName())));
+    public ResponseEntity<List<Course>> getMyEnrolledCourses() {
+        return ResponseEntity.ok(courseService.findEnrolledCourses(userService.getCurrentUser()));
     }
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @GetMapping("/teaching")
-    public ResponseEntity<List<Course>> getMyTeachingCourses(Authentication authentication) {
-        if (authentication == null) return ResponseEntity.status(401).build();
-        return ResponseEntity.ok(courseService.findCoursesByInstructor(userService.findByUsername(authentication.getName())));
+    public ResponseEntity<List<Course>> getMyTeachingCourses() {
+        return ResponseEntity.ok(courseService.findCoursesByInstructor(userService.getCurrentUser()));
     }
 } 

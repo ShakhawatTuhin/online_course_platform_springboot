@@ -10,6 +10,8 @@ import com.example.courseplatform.service.UserService;
 import com.example.courseplatform.exception.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -157,5 +159,52 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> findAllUsers() {
         return userRepository.findAll();
+    }
+
+    @Override
+    public long countByRole(Role role) {
+        return userRepository.countByRole(role);
+    }
+
+    @Override
+    public List<User> findRecentUsers(int limit) {
+        return userRepository.findRecentUsers(org.springframework.data.domain.PageRequest.of(0, limit));
+    }
+
+    @Override
+    @Transactional
+    public User changeUserRole(Long id, Role role) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+        user.setRole(role);
+        return userRepository.save(user);
+    }
+
+    @Override
+    public Page<User> findAllPaged(Pageable pageable) {
+        return userRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<User> findByRole(Role role, Pageable pageable) {
+        return userRepository.findByRole(role, pageable);
+    }
+
+    @Override
+    public Page<User> findByUsernameOrEmailContaining(String search, Pageable pageable) {
+        return userRepository.findByUsernameContainingOrEmailContaining(search, search, pageable);
+    }
+
+    @Override
+    public Page<User> findByUsernameOrEmailContainingAndRole(String search, Role role, Pageable pageable) {
+        return userRepository.findByUsernameContainingOrEmailContainingAndRole(search, search, role, pageable);
+    }
+
+    @Override
+    public User getCurrentUser() {
+        // Get the current authenticated username from Spring Security context
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        // Look up the user by username
+        return findByUsername(username);
     }
 } 
