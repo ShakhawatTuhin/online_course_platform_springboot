@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+    <title>Error - Online Course Platform</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card border-danger">
+                    <div class="card-header bg-danger text-white">
+                        <h2 class="mb-0">Error</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert alert-danger mb-4">
+                            <h4 class="alert-heading" th:text="${error}">Error Title</h4>
+                            <p th:text="${message}">Error message details will go here.</p>
+                            <hr>
+                            <p class="mb-0">
+                                <strong>Path:</strong> <span th:text="${path}"></span><br>
+                                <strong>Status:</strong> <span th:text="${status}"></span><br>
+                                <strong>Time:</strong> <span th:text="${timestamp}"></span>
+                            </p>
+                        </div>
+                        
+                        <div class="text-center">
+                            <a href="/" class="btn btn-primary">
+                                <i class="fas fa-home"></i> Return to Home
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html> 

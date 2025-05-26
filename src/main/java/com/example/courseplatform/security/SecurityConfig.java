@@ -30,9 +30,9 @@ public class SecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/**").permitAll()
                 .requestMatchers("/", "/home", "/register", "/login", "/h2-console/**").permitAll()
                 .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
-                .requestMatchers("/api/public/**").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/instructor/**").hasRole("INSTRUCTOR")
                 .anyRequest().authenticated()
@@ -46,10 +46,19 @@ public class SecurityConfig {
                 .logoutSuccessUrl("/")
                 .permitAll()
             )
-            .headers(headers -> headers
-                .frameOptions(frameOptionsConfig -> frameOptionsConfig.sameOrigin())
-            )
+            .headers(headers -> headers.frameOptions().disable()) // For H2 Console
             .authenticationProvider(authenticationProvider());
+
+        http.exceptionHandling(exception -> exception
+            .defaultAuthenticationEntryPointFor(
+                (request, response, authException) -> {
+                    response.setStatus(401);
+                    response.setContentType("application/json");
+                    response.getWriter().write("{\"error\": \"Unauthorized\"}");
+                },
+                new org.springframework.security.web.util.matcher.AntPathRequestMatcher("/api/**")
+            )
+        );
 
         return http.build();
     }

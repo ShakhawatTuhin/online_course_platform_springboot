@@ -75,6 +75,16 @@
                                     (user.role == 'ADMIN' ? 'bg-danger' : 
                                     (user.role == 'INSTRUCTOR' ? 'bg-primary' : 'bg-success'))}"
                                       th:text="${user.role}">role</span>
+                                <form th:action="@{/admin/users/{id}/role(id=${user.id})}" method="post" class="d-inline ms-2">
+                                    <select name="role" class="form-select form-select-sm d-inline-block" style="width: auto;" onchange="this.form.submit()">
+                                        <option value="" disabled selected>Change role</option>
+                                        <option th:each="roleOption : ${T(com.example.courseplatform.model.Role).values()}"
+                                                th:value="${roleOption}" 
+                                                th:text="${roleOption}"
+                                                th:selected="${user.role == roleOption}">
+                                        </option>
+                                    </select>
+                                </form>
                             </td>
                             <td th:text="${#temporals.format(user.createdAt, 'dd MMM yyyy')}">date</td>
                             <td>
@@ -226,6 +236,15 @@
                 this.querySelector('#userForm').action = '' + /*[[@{/admin/users/create}]]*/ '';
                 this.querySelector('#userForm').reset();
                 this.querySelector('#password').required = true;
+            }
+        });
+        
+        // Check for editUser query parameter on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const editUserId = urlParams.get('editUser');
+            if (editUserId) {
+                editUser(editUserId);
             }
         });
     </script>

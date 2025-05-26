@@ -50,10 +50,8 @@ public class HomeController {
 
         switch (user.getRole()) {
             case ADMIN:
-                logger.info("User role is ADMIN, preparing admin/dashboard.");
-                model.addAttribute("totalUsers", userService.countUsers());
-                model.addAttribute("totalCourses", courseService.countCourses());
-                return "admin/dashboard";
+                logger.info("User role is ADMIN, redirecting to admin dashboard.");
+                return "redirect:/admin/dashboard";
             case INSTRUCTOR:
                 logger.info("User role is INSTRUCTOR, preparing instructor/dashboard.");
                 model.addAttribute("courses", courseService.findCoursesByInstructor(user));
