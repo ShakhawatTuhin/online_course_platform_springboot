@@ -13,7 +13,7 @@ import java.util.Set;
 @Table(name = "courses")
 @Getter
 @Setter
-public class Course extends BaseEntity {
+public class Course extends AbstractEntity {
     @Column(nullable = false)
     private String title;
 

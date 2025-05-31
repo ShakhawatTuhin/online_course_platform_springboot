@@ -18,6 +18,10 @@ spring:
       path: /h2-console
   thymeleaf:
     cache: false
+  web:
+    resources:
+      cache:
+        period: 3600
 
 server:
   port: 8081

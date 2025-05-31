@@ -11,7 +11,7 @@ import java.util.Set;
 @Table(name = "users")
 @Getter
 @Setter
-public class User extends BaseEntity {
+public class User extends AbstractEntity {
     @Column(unique = true, nullable = false)
     private String username;
 
