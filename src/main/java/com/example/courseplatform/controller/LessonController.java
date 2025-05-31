@@ -6,9 +6,7 @@ import com.example.courseplatform.model.Lesson;
 import com.example.courseplatform.service.CourseService;
 import com.example.courseplatform.service.LessonService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,19 +19,47 @@ import java.util.Comparator;
 
 @Controller
 @RequestMapping("/courses/{courseId}/lessons")
-@RequiredArgsConstructor
-public class LessonController {
-    private final LessonService lessonService;
+@Slf4j
+public class LessonController extends AbstractController<Lesson, Long, LessonService> {
     private final CourseService courseService;
-    private static final Logger logger = LoggerFactory.getLogger(LessonController.class);
+
+    public LessonController(LessonService lessonService, CourseService courseService) {
+        super(lessonService);
+        this.courseService = courseService;
+    }
+
+    @Override
+    protected String getEntityName() {
+        return "Lesson";
+    }
+
+    @Override
+    protected String getViewPath() {
+        return "lesson";
+    }
+    
+    @Override
+    protected String getRequestPath() {
+        // This is a nested resource, so we need a custom implementation
+        return null; // This will be handled by custom redirect methods
+    }
+    
+    // Custom redirect methods for nested resources
+    protected String getCourseRedirectUrl(Long courseId) {
+        return "redirect:/courses/" + courseId;
+    }
+    
+    protected String getLessonRedirectUrl(Long courseId, Long lessonId) {
+        return "redirect:/courses/" + courseId + "/lessons/" + lessonId;
+    }
 
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @GetMapping("/create")
     public String showCreateForm(@PathVariable Long courseId, Model model) {
         try {
-            logger.info("Showing create lesson form for course ID: {}", courseId);
+            log.info("Showing create lesson form for course ID: {}", courseId);
             Course course = courseService.findById(courseId);
-            logger.info("Course found: {}", course.getTitle());
+            log.info("Course found: {}", course.getTitle());
             
             // Create new LessonDto and set the courseId
             LessonDto lessonDto = new LessonDto();
@@ -44,7 +70,7 @@ public class LessonController {
             model.addAttribute("lesson", lessonDto);
             return "lesson/form";
         } catch (Exception e) {
-            logger.error("Error showing lesson form: ", e);
+            log.error("Error showing lesson form: ", e);
             throw e;
         }
     }
@@ -57,7 +83,7 @@ public class LessonController {
                              RedirectAttributes redirectAttributes,
                              Model model) {
         try {
-            logger.info("Processing create lesson: {}, courseId: {}", lessonDto.getTitle(), courseId);
+            log.info("Processing create lesson: {}, courseId: {}", lessonDto.getTitle(), courseId);
             
             // Set courseId explicitly from path variable
             lessonDto.setCourseId(courseId);
@@ -72,7 +98,7 @@ public class LessonController {
             }
             
             if (result.hasErrors()) {
-                logger.warn("Validation errors: {}", result.getAllErrors());
+                log.warn("Validation errors: {}", result.getAllErrors());
                 // Add course to model in case of error
                 model.addAttribute("course", courseService.findById(courseId));
                 return "lesson/form";
@@ -91,13 +117,13 @@ public class LessonController {
                 lesson.setOrderNumber(lessonDto.getOrderNumber());
             }
 
-            Lesson savedLesson = lessonService.createLesson(courseId, lesson);
-            logger.info("Lesson created successfully: {}", savedLesson.getId());
+            Lesson savedLesson = service.createLesson(courseId, lesson);
+            log.info("Lesson created successfully: {}", savedLesson.getId());
             
             redirectAttributes.addFlashAttribute("success", "Lesson created successfully!");
             return "redirect:/courses/" + courseId;
         } catch (Exception e) {
-            logger.error("Error creating lesson: ", e);
+            log.error("Error creating lesson: ", e);
             redirectAttributes.addFlashAttribute("error", "Error creating lesson: " + e.getMessage());
             return "redirect:/courses/" + courseId;
         }
@@ -109,7 +135,7 @@ public class LessonController {
                            Model model) {
         try {
             Course course = courseService.findById(courseId);
-            Lesson lesson = lessonService.findById(lessonId);
+            Lesson lesson = service.findById(lessonId);
             
             // Find previous and next lessons for navigation
             List<Lesson> lessons = course.getLessons().stream()
@@ -138,7 +164,7 @@ public class LessonController {
             
             return "lesson/details";
         } catch (Exception e) {
-            logger.error("Error showing lesson: ", e);
+            log.error("Error showing lesson: ", e);
             throw e;
         }
     }
@@ -148,7 +174,7 @@ public class LessonController {
     public String showEditForm(@PathVariable Long courseId,
                              @PathVariable Long lessonId,
                              Model model) {
-        Lesson lesson = lessonService.findById(lessonId);
+        Lesson lesson = service.findById(lessonId);
         Course course = courseService.findById(courseId);
         
         LessonDto lessonDto = new LessonDto();
@@ -167,29 +193,27 @@ public class LessonController {
     @PostMapping("/{lessonId}/edit")
     public String updateLesson(@PathVariable Long courseId,
                              @PathVariable Long lessonId,
-                             @ModelAttribute("lesson") LessonDto lessonDto,
+                             @Valid @ModelAttribute("lesson") LessonDto lessonDto,
                              BindingResult result,
                              RedirectAttributes redirectAttributes,
                              Model model) {
         if (result.hasErrors()) {
-            // Add course to model in case of error
             model.addAttribute("course", courseService.findById(courseId));
             return "lesson/form";
         }
-
+        
         try {
-            Lesson lesson = lessonService.findById(lessonId);
+            Lesson lesson = service.findById(lessonId);
             lesson.setTitle(lessonDto.getTitle());
             lesson.setContent(lessonDto.getContent());
-            if (lessonDto.getOrderNumber() != null) {
-                lesson.setOrderNumber(lessonDto.getOrderNumber());
-            }
-
-            lessonService.updateLesson(lessonId, lesson);
+            lesson.setOrderNumber(lessonDto.getOrderNumber());
+            
+            service.updateLesson(lessonId, lesson);
+            
             redirectAttributes.addFlashAttribute("success", "Lesson updated successfully!");
             return "redirect:/courses/" + courseId + "/lessons/" + lessonId;
         } catch (Exception e) {
-            logger.error("Error updating lesson: ", e);
+            log.error("Error updating lesson: ", e);
             redirectAttributes.addFlashAttribute("error", "Error updating lesson: " + e.getMessage());
             return "redirect:/courses/" + courseId + "/lessons/" + lessonId;
         }
@@ -201,10 +225,10 @@ public class LessonController {
                              @PathVariable Long lessonId,
                              RedirectAttributes redirectAttributes) {
         try {
-            lessonService.deleteLesson(lessonId);
+            service.deleteLesson(lessonId);
             redirectAttributes.addFlashAttribute("success", "Lesson deleted successfully!");
         } catch (Exception e) {
-            logger.error("Error deleting lesson: ", e);
+            log.error("Error deleting lesson: ", e);
             redirectAttributes.addFlashAttribute("error", "Error deleting lesson: " + e.getMessage());
         }
         return "redirect:/courses/" + courseId;
@@ -215,7 +239,7 @@ public class LessonController {
     public String reorderLessons(@PathVariable Long courseId,
                                @RequestBody List<Long> lessonIds,
                                RedirectAttributes redirectAttributes) {
-        lessonService.reorderLessons(courseId, lessonIds);
+        service.reorderLessons(courseId, lessonIds);
         redirectAttributes.addFlashAttribute("success", "Lessons reordered successfully!");
         return "redirect:/courses/" + courseId;
     }

@@ -19,8 +19,5 @@ public class UserUpdateDto {
     @Size(max = 255, message = "Bio can be up to 255 characters")
     private String bio;
 
-    // Add other fields from UserProfile that should be updatable
-    // For example:
-    // private String profilePictureUrl;
-    // private String websiteUrl;
+
 } 

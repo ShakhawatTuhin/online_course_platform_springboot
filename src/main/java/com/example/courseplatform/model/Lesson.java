@@ -8,7 +8,7 @@ import lombok.Setter;
 @Table(name = "lessons")
 @Getter
 @Setter
-public class Lesson extends BaseEntity {
+public class Lesson extends AbstractEntity {
     @Column(nullable = false)
     private String title;
 

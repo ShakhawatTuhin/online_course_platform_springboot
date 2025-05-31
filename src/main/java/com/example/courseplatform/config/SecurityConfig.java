@@ -1,4 +1,4 @@
-package com.example.courseplatform.security;
+package com.example.courseplatform.config;
 
 import com.example.courseplatform.service.UserService;
 import org.springframework.context.annotation.Bean;
