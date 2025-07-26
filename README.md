@@ -2,6 +2,31 @@
 
 This is a Spring Boot application for an online course platform.
 
+## Quick Start: Login Credentials & Registration
+
+You can log in with the following credentials:
+
+- **Instructor:** `instructor`, password: `instructorpass`
+- **Admin:** `admin`, password: `adminpass`
+- **Student:** `student`, password: `studentpass`
+
+Or, you can create any user by registering via the registration page.
+
+## Screenshots
+
+<p align="center">
+  <img src="assets/screenshot1.png" width="45%" />
+  <img src="assets/screenshot2.png" width="45%" />
+</p>
+<p align="center">
+  <img src="assets/screenshot3.png" width="45%" />
+  <img src="assets/screenshot4.png" width="45%" />
+</p>
+<p align="center">
+  <img src="assets/screenshot5.png" width="45%" />
+  <img src="assets/screenshot6.png" width="45%" />
+</p>
+
 ## Project Requirements Overview
 
 - **Backend**: Spring Boot 3.x
@@ -37,7 +62,9 @@ Once the project is built, you can run the application using the Spring Boot Mav
 mvn spring-boot:run
 ```
 
-The application will typically be available at `http://localhost:8080`.
+The application will typically be available at `http://localhost:8081`.
+
+> **Note:** Please ensure port **8081** is open and available on your system before running the application.
 
 ## API Endpoints
 
