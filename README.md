@@ -35,14 +35,14 @@ This is a Spring Boot application for an online course platform. The platform su
 
 - New users can register as students or instructors.
 <p align="center">
-  <img src="assets/screenshot2.png" width="60%" />
+  <img src="assets/screenshot3.png" width="60%" />
 </p>
 
 ### 3. Login Page
 
 - Secure login for all user roles.
 <p align="center">
-  <img src="assets/screenshot3.png" width="60%" />
+  <img src="assets/screenshot2.png" width="60%" />
 </p>
 
 ### 4. Instructor Dashboard
